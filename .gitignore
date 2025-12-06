@@ -1,6 +1,6 @@
 node_modules
 .env*
-!env.exampl
+!.env.example
 .vscode
 *.log
-.DS_store
+.DS_Store
