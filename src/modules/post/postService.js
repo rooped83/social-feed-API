@@ -1,6 +1,7 @@
 import { ERROR_CODES } from "../../core/errors/errorCodes.js";
 import AppError from '../../core/errors/appError.js';
 import * as postRepo from './postRepo.js';
+import * as commentRepo from '../comment/commentRepo.js';
 
 //get all posts 
 export const getAllPosts = async () => {
@@ -30,7 +31,9 @@ export const getPostById = async (_id) => {
         const { code, message, statusCode } =ERROR_CODES.POST_NOT_FOUND;
         throw new AppError(message, statusCode, code);
     }
-    return post;
+     const totalComments = await commentRepo.countPostComments();
+    return { post, totalComments };
+
 };
 
 // update post

@@ -94,6 +94,31 @@ export const ERROR_CODES = {
         code: 'UNAUTHORIZED_ACTION',
         message: 'You are not authorized to perform this action',
         statusCode: 403
-     }
+     },
+     COMMENT_NOT_FOUND: {
+        code: 'COMMENT_NOT_FOUND',
+        message: 'Comment not found',
+        statusCode: 404
+     },
+     UNAUTHORIZED_TO_EDIT_COMMENT: {
+        code: 'UNAUTHORIZED_TO_EDIT_COMMENT',
+        message: 'You are not authorized to edit this comment',
+        statusCode: 403
+     },
+     UNAUTHORIZED_TO_DELETE_COMMENT: {
+        code: 'UNAUTHORIZED_TO_DELETE_COMMENT',
+        message: 'You are not authorized to delete this comment',
+        statusCode: 403
+     },
+     INVALID_TOKEN: {
+        code: 'INVALID_TOKEN',
+        message: 'Invalid token',
+        statusCode: 401
+     },
+     NO_COMMENTS_YET: {
+        code: 'NO_COMMENTS_YET',
+        message: 'No comments yet',
+        statusCode: 404
+     },
 };
 

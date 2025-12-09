@@ -24,7 +24,7 @@ export const createPost = asyncHandler(async (req,res) => {
 export const getPostById = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const post =  await postService.getPostById(id);
-        res.status(200).json({ success: true, message: "Post fetched successfully", post: post });
+        res.status(200).json({ success: true, message: "Post fetched successfully", result: post });
 });
 
 //update post 
@@ -50,7 +50,7 @@ export const deletePost = asyncHandler(async (req, res) => {
 export const getUserPosts = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const posts = await postService.getPostsByUserId(id);
-    res.status(200).json({ success: true, message: "User posts fetched successfully", posts: posts, totalPosts: posts.length });
+    res.status(200).json({ success: true, message: "User posts fetched successfully", result: posts, totalPosts: posts.length });
 });
  
 // get post by category 
