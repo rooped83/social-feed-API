@@ -28,7 +28,6 @@
     "rate-limiter-flexible": "^8.1.0",
     "redis": "^5.9.0",
     "terminal": "^0.1.4",
-    "warp": "^1.1.4",
     "winston": "^3.18.3"
   }
 }
