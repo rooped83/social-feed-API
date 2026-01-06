@@ -11,7 +11,7 @@ router.post('/signup', dynamicRateLimiter('signup'), validate(signUpSchema), aut
 //signin route
 router.post('/signin', dynamicRateLimiter('login'), validate(signInSchema), authController.signIn);
  //signout route
-router.post('/signout',authorize, authController.signOut)
+router.post('/signout', authController.signOut)
  //email verification
 router.patch('/email-verification', authorize, authController.sendEmailVerificationCode);
 router.patch('/email-verification-verify',validate(verificationCodeSchema), authorize, authController.verifyEmailCode);

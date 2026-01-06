@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+import { config } from '../config/index.js';
 import { asyncHandler } from '../core/utils/asyncCatch.js'
 import { ERROR_CODES } from '../core/errors/errorCodes.js';
 import AppError from '../core/errors/appError.js';
-dotenv.config();
  export const authorize = asyncHandler(async (req, res, next) => {
     let token ;
     if (req.headers.client === 'not-browser') {
@@ -19,7 +18,7 @@ dotenv.config();
         throw new AppError(message, statusCode, code);
     }
     try {
-        const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+        const decoded = jwt.verify(token, config().tokenSecret);
         req.user = decoded; 
         next();
         } catch (error) {

@@ -11,18 +11,28 @@ res.status(201).json({ success: true, message: "User created successfully", user
 //signin controller
 export const signIn = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-    const { user, accessToken } = await authService.signIn(email, password);
-    res.cookie('Authorization', 'Bearer ' + accessToken, {
-        expires: new Date(Date.now() + 4 * 3600000), 
-        httpOnly: config.nodeEnv === 'production',
-        secure: config.nodeEnv === 'production'
+    const { user, accessToken, refreshToken } = await authService.signIn(email, password);
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: config().nodeEnv === 'production',
+        sameSite: 'Strict',
+        path: '/auth/refresh',
+        maxAge: 7 * 24 * 60 * 60 * 1000
     });
-    res.status(200).json({ success: true, message: "User signed in successfully", user: { user, accessToken }});
+    res.status(200).json({ success: true, message: "User signed in successfully", user, accessToken });
 });
 
 // signout   
-export const signOut = asyncHandler(async (_req, res) => {
-    authService.signOut(res);    
+export const signOut = asyncHandler(async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+    if (refreshToken) {
+        await authService.signOut(refreshToken)
+    }   res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: config().nodeEnv === 'production',
+        sameSite: 'Strict',
+        path: '/auth/refresh'
+        });
     res.status(200).json({ success: true, message: "User signed out successfully"});
 });
 

@@ -1,12 +1,16 @@
 import * as userRepo from '../user/userRepo.js';
 import * as authRepo from './authRepo.js';
-import token from '../../core/utils/token.js';
+import { generateToken } from '../../core/utils/token.js';
 import { ERROR_CODES } from '../../core/errors/errorCodes.js';
 import AppError from '../../core/errors/appError.js';
 import { doHashing, doCompare } from '../../core/utils/hashing.js';
 import { generateVerificationCode, hashVerificationCode } from './helpers/generateVerficationCode.js';
 import { sendVerificationEmail, sendForgotPasswordEmail } from './helpers/mailer.js';
 import UserSerializer from '../user/userSerializer.js';
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import { config } from '../../config/index.js';
+import { redisClient } from '../../config/redisClient.js'
 
 export const signUp = async (email, password, name) => {
     // check if user exists
@@ -28,7 +32,7 @@ export const signUp = async (email, password, name) => {
     const accessToken = token(serializedUser);
     return { user: serializedUser, accessToken };
 };
-
+//signIn service 
 export const signIn = async (email, password) => {
     // check if exists
     const user = await userRepo.getUserByEmail(email);
@@ -42,15 +46,29 @@ export const signIn = async (email, password) => {
         const { code, message, statusCode } = ERROR_CODES.WRONG_PASSWORD;
         throw new AppError(message, statusCode, code);
     }
+    const tokenId = crypto.randomUUID()
      const serializedUser = UserSerializer.base(user);
     // generate token
-    const accessToken = token(serializedUser);
-    return { user: serializedUser, accessToken };
+    const accessToken = generateToken(serializedUser);
+    const refreshToken = generateToken(serializedUser, tokenId);
+    // store refresh token in redis
+    const redisKey = `refreshToken: ${serializedUser.id}: ${tokenId}`;
+    await redisClient.set(redisKey, 'valid', {
+        EX: 7 * 24 * 60 * 60 
+    });
+    return { user: serializedUser, accessToken, refreshToken };
     };
 
     //sign out logic
-    export const signOut = async (res) => {
-        res.clearCookie('Authorization');
+    export const signOut = async (refreshToken) => {
+        if (!refreshToken || typeof refreshToken !== 'string') {
+            return false;
+        }
+
+        const payload = jwt.verify(refreshToken, config().refreshTokenSecret)
+
+        redisClient.del(`refreshToken: ${payload.sub}: ${payload.jwtId}`);
+        return true;
     };
 
     // send verification code logic:
