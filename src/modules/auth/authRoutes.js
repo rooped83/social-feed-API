@@ -10,16 +10,17 @@ const router = Router({ mergeParams: true });
 router.post('/signup', dynamicRateLimiter('signup'), validate(signUpSchema), authController.signUp);
 //signin route
 router.post('/signin', dynamicRateLimiter('login'), validate(signInSchema), authController.signIn);
+router.post('/refresh', authController.refreshToken);
  //signout route
-router.post('/signout', authController.signOut)
+router.post('/signout', dynamicRateLimiter('logout'), authController.signOut);
  //email verification
-router.patch('/email-verification', authorize, authController.sendEmailVerificationCode);
-router.patch('/email-verification-verify',validate(verificationCodeSchema), authorize, authController.verifyEmailCode);
+router.patch('/email-verification', authorize, dynamicRateLimiter('emailVerification'), authController.sendEmailVerificationCode);
+router.patch('/email-verification-verify',  authorize, dynamicRateLimiter('emailVerification'), validate(verificationCodeSchema), authController.verifyEmailCode);
  //change password
 router.patch('/change-password', authorize, dynamicRateLimiter('resetPassword'), authController.changePassword);
 // forgot password:
 router.patch('/forgot-password', dynamicRateLimiter('forgotPassword'), authController.sendForgotPassCode);
-router.patch('/verify-forgot-password', authController.verifyForgotPassCode);
+router.patch('/verify-forgot-password', dynamicRateLimiter('forgotPassword'), validate(verificationCodeSchema) ,authController.verifyForgotPassCode);
 
 export default router;
 

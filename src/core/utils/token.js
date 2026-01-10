@@ -1,12 +1,17 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../../config/index.js';
+
 // generate a signed JWT for a user object
 export const generateToken = (user) => {
     if (!user || !user.id) {
         throw new Error('generateToken requires a user object with an id');
     }
     return jwt.sign(
-        { sub: user.id },
+        { id: user.id,
+            tokenId: user.tokenId,
+            role: user.role,
+            type: 'access'
+         },
         config().tokenSecret,
         { expiresIn: config().expirationTime }
     );
@@ -14,10 +19,11 @@ export const generateToken = (user) => {
 
  
 export const generateRefreshToken = (user, tokenId) => {
-    jwt.sign(
+    return jwt.sign(
         {
             id: user.id,
-            jwtId: tokenId,
+            tokenId,
+            role: user.role,
             type: 'refresh'
         },
         config().refreshTokenSecret,

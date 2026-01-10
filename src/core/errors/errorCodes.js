@@ -120,5 +120,15 @@ export const ERROR_CODES = {
         message: 'No comments yet',
         statusCode: 404
      },
+     MISSING_ROLE: {
+      code: 'MISSING_ROLE', 
+      message: 'User role is missing',
+      statusCode: 400
+     },
+     INVALID_ROLE: {
+      code: 'INVALID_ROLE',
+      message: 'Invalid user role', 
+      statusCode: 400
+     }
 };
 

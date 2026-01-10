@@ -2,6 +2,7 @@ import { ERROR_CODES } from "../../core/errors/errorCodes.js";
 import AppError from '../../core/errors/appError.js';
 import * as postRepo from './postRepo.js';
 import * as commentRepo from '../comment/commentRepo.js';
+import { isOwnerOrAdmin } from "../../core/utils/ownership.js";
 
 //get all posts 
 export const getAllPosts = async () => {
@@ -43,10 +44,7 @@ export const updatePost = async (id, postData, userId) => {
         const { code, message, statusCode } = ERROR_CODES.POST_NOT_FOUND
         throw new AppError(message, statusCode, code);
     }
-    if (existingPost.userId._id.toString() !== userId) {
-        const { code, message, statusCode } =ERROR_CODES.UNAUTHORIZED_TO_UPDATE_POST;
-        throw new AppError(message, statusCode, code);
-    }
+    isOwnerOrAdmin(existingPost.userId, { id: userId });
     const updatedPost = await postRepo.updatePost(id, postData);
     return updatedPost;
 };
@@ -58,10 +56,7 @@ export const deletePost = async (id, userId) => {
         const { message, statusCode, code } = ERROR_CODES.POST_NOT_FOUND;
         throw new AppError(message, statusCode, code);
     };
-    if (existingPost.userId._id.toString() !== userId ) {
-        const { message, statusCode, code } = ERROR_CODES.UNAUTHORIZED_TO_DELETE_POST;
-        throw new AppError(message, statusCode, code);
-    };
+    isOwnerOrAdmin(existingPost.userId, { id: userId });
     await postRepo.deletePost(id);
 };
 

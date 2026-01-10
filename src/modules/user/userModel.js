@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
     emailVerified: {
         type: Boolean,
         default: false
+    },
+    role: {
+        type: String,
+        enum: ['USER', 'ADMIN', 'EDITOR'],
+        default: 'USER'
     }
 }, {
     timestamps: true

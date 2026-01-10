@@ -16,7 +16,7 @@ export const signIn = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: config().nodeEnv === 'production',
         sameSite: 'Strict',
-        path: '/auth/refresh',
+        path: '/api/auth/refresh',
         maxAge: 7 * 24 * 60 * 60 * 1000
     });
     res.status(200).json({ success: true, message: "User signed in successfully", user, accessToken });
@@ -71,4 +71,20 @@ res.json({ message: "Your forgot password code sent to email"});
         res.status(200).json({ message: "Password changed successfully" });
     });
 
-    
+
+export const refreshToken = asyncHandler(async (req, res) => {
+    const token = req.cookies.refreshToken;
+    if (!token) {
+        return res.status(401).json({ message: "No refresh token provided" });
+    };
+    const { user, accessToken, refreshToken } = await authService.refreshToken(token);
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: config().nodeEnv === 'production',
+        sameSite: 'Strict',
+        path: '/api/auth/refresh',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+    console.log('Cookies:', req.cookies);
+    res.status(200).json({ success: true, message: "Token refreshed successfully", user, accessToken });
+})

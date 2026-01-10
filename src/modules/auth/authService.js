@@ -1,6 +1,6 @@
 import * as userRepo from '../user/userRepo.js';
 import * as authRepo from './authRepo.js';
-import { generateToken } from '../../core/utils/token.js';
+import { generateToken, generateRefreshToken } from '../../core/utils/token.js';
 import { ERROR_CODES } from '../../core/errors/errorCodes.js';
 import AppError from '../../core/errors/appError.js';
 import { doHashing, doCompare } from '../../core/utils/hashing.js';
@@ -12,6 +12,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../../config/index.js';
 import { redisClient } from '../../config/redisClient.js'
 
+// sign up 
 export const signUp = async (email, password, name) => {
     // check if user exists
     const existingUser = await userRepo.getUserByEmail(email);
@@ -32,7 +33,7 @@ export const signUp = async (email, password, name) => {
     const accessToken = token(serializedUser);
     return { user: serializedUser, accessToken };
 };
-//signIn service 
+//signIn logic
 export const signIn = async (email, password) => {
     // check if exists
     const user = await userRepo.getUserByEmail(email);
@@ -50,12 +51,16 @@ export const signIn = async (email, password) => {
      const serializedUser = UserSerializer.base(user);
     // generate token
     const accessToken = generateToken(serializedUser);
-    const refreshToken = generateToken(serializedUser, tokenId);
+    const refreshToken = generateRefreshToken(serializedUser, tokenId);
     // store refresh token in redis
-    const redisKey = `refreshToken: ${serializedUser.id}: ${tokenId}`;
-    await redisClient.set(redisKey, 'valid', {
-        EX: 7 * 24 * 60 * 60 
-    });
+    const redisKey = `refreshToken:${serializedUser.id}:${tokenId}`;
+    await redisClient.set(
+        redisKey,
+         'valid', 
+        'EX',
+         7 * 24 * 60 * 60 
+    );
+     
     return { user: serializedUser, accessToken, refreshToken };
     };
 
@@ -67,7 +72,7 @@ export const signIn = async (email, password) => {
 
         const payload = jwt.verify(refreshToken, config().refreshTokenSecret)
 
-        redisClient.del(`refreshToken: ${payload.sub}: ${payload.jwtId}`);
+        redisClient.del(`refreshToken:${payload.id}:${payload.tokenId}`);
         return true;
     };
 
@@ -203,7 +208,48 @@ export const sendForgotPassCode = async (email) => {
         await authRepo.markAsUsed({ verificationCodeModelId: record._id });
     };
 
-
+    // refresh token logic
+    export const refreshToken = async (refreshToken) => {
+  if (!refreshToken) {
+    throw new AppError('Missing refresh token', 401);
+  }
+  //  Verify JWT
+  let payload;
+  try {
+    payload = jwt.verify(refreshToken, config().refreshTokenSecret);
+  } catch {
+    throw new AppError('Invalid refresh token', 401);
+  }
+  if (payload.type !== 'refresh') {
+    throw new AppError('Invalid token type', 401);
+  }
+  const { id: userId, tokenId: oldTokenId } = payload;
+  // Check Redis
+  const oldKey = `refreshToken:${userId}:${oldTokenId}`;
+  const exists = await redisClient.get(oldKey);
+  if (!exists) {
+    throw new AppError('Refresh token revoked', 401);
+  }
+  const newTokenId = crypto.randomUUID();
+  const newRefreshToken = generateRefreshToken(
+    { id: userId, role: payload.role },
+    newTokenId
+  );
+  //  Store new token in redis
+  const newKey = `refreshToken:${userId}:${newTokenId}`;
+  await redisClient.set(newKey, 'valid', 'EX', 7 * 24 * 60 * 60);
+  // Delete old token aftre new one exists
+  await redisClient.del(oldKey);
+  // Issue new access token
+  const newAccessToken = generateToken({
+    id: userId,
+    role: payload.role
+  });
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken
+  };
+};
 
         
 
