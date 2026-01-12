@@ -29,9 +29,19 @@ export const signUp = async (email, password, name) => {
         name
     });
     const serializedUser = UserSerializer.base(user);
-    // generate token
-    const accessToken = token(serializedUser);
-    return { user: serializedUser, accessToken };
+    // generate tokens
+    const tokenId = crypto.randomUUID();
+  const accessToken = generateToken(serializedUser);
+  const refreshToken = generateRefreshToken(serializedUser, tokenId);
+
+  await redisClient.set(
+    `refreshToken:${serializedUser.id}:${tokenId}`,
+    'valid',
+    'EX',
+    7 * 24 * 60 * 60
+  );
+
+    return { serializedUser, accessToken, refreshToken };
 };
 //signIn logic
 export const signIn = async (email, password) => {
