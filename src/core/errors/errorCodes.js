@@ -129,6 +129,11 @@ export const ERROR_CODES = {
       code: 'INVALID_ROLE',
       message: 'Invalid user role', 
       statusCode: 400
+     },
+     INVALID_REQUEST: {
+      code: 'INVALID_REQUEST',
+      message: 'Invalid request',
+      statusCode: 400
      }
 };
 

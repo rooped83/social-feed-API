@@ -4,13 +4,13 @@ import AppError from '../../core/errors/appError.js';
 import { ERROR_CODES } from '../../core/errors/errorCodes.js';
 import { isOwnerOrAdmin } from '../../core/utils/ownership.js';
 
-export const addComment = async (postId, userId, text) => {
+export const addComment = async ({ postId, userId, text }) => {
     const post = await postRepo.getPostById(postId);
     if (!post) { 
         const { code, message, statusCode } = ERROR_CODES.POST_NOT_FOUND;
         throw new AppError(message, statusCode, code);
     };
-    const comment = await commentRepo.addCommentToPost(postId, userId, text);
+    const comment = await commentRepo.addCommentToPost({ postId, userId, text });
     return comment;
 };
 
@@ -40,11 +40,20 @@ export const deleteComment = async ({ commentId, userId }) => {
     const { code, message, statusCode } = ERROR_CODES.INVALID_REQUEST;
     throw new AppError(message, statusCode, code);
   }
-  const comment = await commentRepo.getComment(normalizedCommentId);
+  const comment = await commentRepo.getComment(commentId);
   if (!comment) {
     const { code, message, statusCode } = ERROR_CODES.COMMENT_NOT_FOUND;
     throw new AppError(message, statusCode, code);
   }
-  isOwnerOrAdmin(comment.userId, { id: userId, role: user.role });
-  await commentRepo.deleteComment(normalizedCommentId);
+  isOwnerOrAdmin(comment.userId, { id: userId, role: userId.role });
+  await commentRepo.deleteComment(commentId);
 };
+
+export const getComment = async (commentId) => {
+  const comment = await commentRepo.getComment(commentId);
+  if (!comment) {
+    const { code, message, statusCode } = ERROR_CODES.COMMENT_NOT_FOUND;
+    throw new AppError(message, statusCode, code);
+  };
+  return comment;
+}
