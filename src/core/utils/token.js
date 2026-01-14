@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { config } from '../../config/index.js';
+import { tokenConfig } from '../../config/tokenConfig.js';
+
 
 // generate a signed JWT for a user object
 export const generateToken = (user) => {
@@ -12,8 +13,8 @@ export const generateToken = (user) => {
             role: user.role,
             type: 'access'
          },
-        config().tokenSecret,
-        { expiresIn: config().expirationTime }
+        tokenConfig().accessTokenSecret,
+        { expiresIn: tokenConfig().accessTokenExpirationTime }
     );
 };
 
@@ -26,7 +27,7 @@ export const generateRefreshToken = (user, tokenId) => {
             role: user.role,
             type: 'refresh'
         },
-        config().refreshTokenSecret,
-        { expiresIn: config().refreshTokenExpirationTime }
+        tokenConfig().refreshTokenSecret,
+        { expiresIn: tokenConfig().refreshTokenExpirationTime }
     );
 };
