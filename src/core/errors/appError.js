@@ -1,10 +1,20 @@
 export default class AppError extends Error {
-    constructor(message, statusCode, code)  {
-        super(message);
-        this.statusCode = statusCode || 500;
-        this.code = code || 'INTERNAL_SERVER_ERROR';
-        this.isOperational = true;
-
-        Error.captureStackTrace(this, this.constructor)
+  constructor(errorDef) {
+    if (errorDef instanceof AppError) {
+      return errorDef; 
     }
-};
+
+    if (typeof errorDef !== 'object') {
+      throw new Error('AppError must be constructed with ERROR_CODES');
+    }
+
+    const { code, message, statusCode, type } = errorDef;
+    super(message);
+
+    this.code = code;
+    this.statusCode = statusCode;
+    this.type = type;
+    this.isOperational = true;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}

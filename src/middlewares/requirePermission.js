@@ -6,19 +6,16 @@ export const requirePermission = (permission) => {
     return (req, res, next) => {
         const { role } = req.user;
         if (!role) {
-            const { code, message, statusCode } = ERROR_CODES.MISSING_ROLE;
-            throw new AppError(message, statusCode, code);
+            throw new AppError(ERROR_CODES.MISSING_ROLE);
         }
         
         const permissions = rolePermissions[role];
-        if (!permissions) {
-            const { code, message, statusCode } = ERROR_CODES.INVALID_ROLE;  
-            throw new AppError(code, message, statusCode);
+        if (!permissions) { 
+            throw new AppError(ERROR_CODES.INVALID_ROLE);
         }
 
         if (!permissions || !permissions.includes(permission)) {
-            const { code, message, statusCode } = ERROR_CODES.UNAUTHORIZED_ACTION;
-            throw new AppError(message, statusCode, code);
+            throw new AppError(ERROR_CODES.UNAUTHORIZED_ACTION);
         }
         next();
     };

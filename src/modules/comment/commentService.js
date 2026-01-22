@@ -6,9 +6,8 @@ import { isOwnerOrAdmin } from '../../core/utils/ownership.js';
 
 export const addComment = async ({ postId, userId, text }) => {
     const post = await postRepo.getPostById(postId);
-    if (!post) { 
-        const { code, message, statusCode } = ERROR_CODES.POST_NOT_FOUND;
-        throw new AppError(message, statusCode, code);
+    if (!post) {
+        throw new AppError(ERROR_CODES.POST_NOT_FOUND);
     };
     const comment = await commentRepo.addCommentToPost({ postId, userId, text });
     return comment;
@@ -18,8 +17,7 @@ export const getCommentsByPostId = async (postId) => {
     const comments = await commentRepo.getCommentsByPostId(postId);
     const totalComments = comments.length;
     if (!comments || comments.length === 0) {
-        const { code, message, statusCode } = ERROR_CODES.NO_COMMENTS_YET;
-        throw new AppError(message, statusCode, code);
+        throw new AppError( ERROR_CODES.NO_COMMENTS_YET);
     };
     return { totalComments, comments }
 };
@@ -27,8 +25,7 @@ export const getCommentsByPostId = async (postId) => {
 export const editComment = async (commentId, userId, text) => {
     const comment = await commentRepo.getComment(commentId);
     if (!comment) {
-        const { code, message, statusCode } = ERROR_CODES.COMMENT_NOT_FOUND;
-        throw new AppError(message, statusCode, code);
+        throw new AppError(ERROR_CODES.COMMENT_NOT_FOUND);
     };
     isOwnerOrAdmin(comment.userId, { id: userId, role: user.role });
     const updatedComment = await commentRepo.editComment(commentId, text);
@@ -37,13 +34,11 @@ export const editComment = async (commentId, userId, text) => {
 
 export const deleteComment = async ({ commentId, userId }) => {
   if (!commentId || !userId) {
-    const { code, message, statusCode } = ERROR_CODES.INVALID_REQUEST;
-    throw new AppError(message, statusCode, code);
-  }
+    throw new AppError(ERROR_CODES.INVALID_REQUEST);
+  };
   const comment = await commentRepo.getComment(commentId);
   if (!comment) {
-    const { code, message, statusCode } = ERROR_CODES.COMMENT_NOT_FOUND;
-    throw new AppError(message, statusCode, code);
+    throw new AppError( ERROR_CODES.COMMENT_NOT_FOUND);
   }
   isOwnerOrAdmin(comment.userId, { id: userId, role: userId.role });
   await commentRepo.deleteComment(commentId);
@@ -52,8 +47,7 @@ export const deleteComment = async ({ commentId, userId }) => {
 export const getComment = async (commentId) => {
   const comment = await commentRepo.getComment(commentId);
   if (!comment) {
-    const { code, message, statusCode } = ERROR_CODES.COMMENT_NOT_FOUND;
-    throw new AppError(message, statusCode, code);
+    throw new AppError(ERROR_CODES.COMMENT_NOT_FOUND);
   };
   return comment;
 }

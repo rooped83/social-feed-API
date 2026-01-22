@@ -29,8 +29,7 @@ export const createPost = async ({ title, content, category, userId, page }) => 
 export const getPostById = async (_id) => {
     const post = await postRepo.getPostById(_id);
     if (!post) {
-        const { code, message, statusCode } =ERROR_CODES.POST_NOT_FOUND;
-        throw new AppError(message, statusCode, code);
+        throw new AppError(ERROR_CODES.POST_NOT_FOUND);
     }
      const totalComments = await commentRepo.countPostComments();
     return { post, totalComments };
@@ -41,8 +40,7 @@ export const getPostById = async (_id) => {
 export const updatePost = async (id, postData, userId) => {
     const existingPost = await postRepo.getPostById(id);
     if (!existingPost) {
-        const { code, message, statusCode } = ERROR_CODES.POST_NOT_FOUND
-        throw new AppError(message, statusCode, code);
+        throw new AppError(ERROR_CODES.POST_NOT_FOUND);
     }
     isOwnerOrAdmin(existingPost.userId, { id: userId });
     const updatedPost = await postRepo.updatePost(id, postData);
@@ -53,8 +51,7 @@ export const updatePost = async (id, postData, userId) => {
 export const deletePost = async (id, userId) => {
     const existingPost = await postRepo.getPostById(id);
     if (!existingPost) {
-        const { message, statusCode, code } = ERROR_CODES.POST_NOT_FOUND;
-        throw new AppError(message, statusCode, code);
+        throw new AppError(ERROR_CODES.POST_NOT_FOUND);
     };
     isOwnerOrAdmin(existingPost.userId, { id: userId });
     await postRepo.deletePost(id);
@@ -64,8 +61,7 @@ export const deletePost = async (id, userId) => {
 export const getPostsByUserId = async (userId) => {
     const posts = await postRepo.getPostsByUserId(userId);
     if (!posts || posts.length === 0 ) {
-        const { code, message, statusCode } = ERROR_CODES.POST_UNAVAILABLE;
-        throw new AppError(message, statusCode, code);
+        throw new AppError(ERROR_CODES.POST_UNAVAILABLE);
     }
     return posts;
 };
@@ -74,8 +70,7 @@ export const getPostsByUserId = async (userId) => {
 export const getPostsByCategory = async (category) => {
     const posts = await postRepo.getPostsByCategory(category);
      if (!posts || posts.length === 0 ) {
-        const { code, message, statusCode } = ERROR_CODES.POST_NOT_FOUND;
-        throw new AppError(message, statusCode, code);
+        throw new AppError(ERROR_CODES.POST_NOT_FOUND);
      }
     return posts;
 };

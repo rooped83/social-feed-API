@@ -21,11 +21,9 @@ export function dynamicRateLimiter(type = 'general') {
             return next();
          } catch (err) {
             if (err.remainingPoints === 0) {
-              const { code, message, statusCode } = ERROR_CODES.RATE_LIMIT_EXCEEDED;
-              return next(new AppError(message, statusCode, code));
+              return next(new AppError(ERROR_CODES.RATE_LIMIT_EXCEEDED));
             }
-            const { code, message, statusCode } = ERROR_CODES.RATE_LIMIT_UNAVAILABLE;
-            return next(new AppError(message, statusCode, code));
+            return next(new AppError(ERROR_CODES.RATE_LIMIT_UNAVAILABLE));
         ;
         }
       

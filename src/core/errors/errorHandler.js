@@ -1,8 +1,29 @@
 export const errorHandler = (err, req, res, next) => {
     if (req.headersSent) return next(err);
     err.statusCode = err.statusCode || 500;
-    err.message = err.message || 'Internal Server Error';
-    // operatioonal errors
+    //err.message = err.message || 'Internal Server Error';
+    err.type = err.type 
+    if (!err.type) {
+        err.type = 'BUG';
+    }
+    // infra error:
+    const type = err.type;
+    if (type === 'INFRA') {
+        console.error('Infra Error:', {
+            code: err.code,
+            message: err.message,
+            statusCode: err.statusCode,
+            type: err.type,
+            requestId: req.requestId,
+            stack: err.stack
+        })
+    };
+    
+    if (type === 'BUG') {
+        console.error('Bug Error:', err);
+    }
+        
+    // development error:
     if (process.env.NODE_ENV === 'development') {
         console.error('Error stack:', err.stack);
         return res.status(err.statusCode).json({

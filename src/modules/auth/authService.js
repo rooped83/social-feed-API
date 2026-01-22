@@ -11,14 +11,14 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { config } from '../../config/index.js';
 import { redisClient } from '../../config/redisClient.js'
+import { tokenConfig } from '../../config/tokenConfig.js';
 
 // sign up 
 export const signUp = async (email, password, name) => {
     // check if user exists
     const existingUser = await userRepo.getUserByEmail(email);
     if (existingUser) {
-        const { code, message, statusCode } = ERROR_CODES.USER_ALREADY_EXIST;
-        throw new AppError( message, statusCode, code)
+        throw new AppError(ERROR_CODES.USER_ALREADY_EXIST);
     }
     // hash password
     const hashedPassword = await doHashing(password)
@@ -48,14 +48,12 @@ export const signIn = async (email, password) => {
     // check if exists
     const user = await userRepo.getUserByEmail(email);
     if (!user) {
-        const { code, message, statusCode } = ERROR_CODES.USER_NOT_FOUND;
-        throw new AppError(message, statusCode, code);
+        throw new AppError( ERROR_CODES.USER_NOT_FOUND);
     }
     //check password
     const isMatch = await doCompare(password, user.password);
     if (!isMatch) {
-        const { code, message, statusCode } = ERROR_CODES.WRONG_PASSWORD;
-        throw new AppError(message, statusCode, code);
+        throw new AppError(ERROR_CODES.WRONG_PASSWORD);
     }
     const tokenId = crypto.randomUUID()
      const serializedUser = UserSerializer.base(user);
@@ -80,7 +78,7 @@ export const signIn = async (email, password) => {
             return false;
         }
 
-        const payload = jwt.verify(refreshToken, config().refreshTokenSecret)
+        const payload = jwt.verify(refreshToken, tokenConfig().refreshTokenSecret)
 
         redisClient.del(`refreshToken:${payload.id}:${payload.tokenId}`);
         return true;
@@ -91,13 +89,11 @@ export const signIn = async (email, password) => {
         // check if exists
         const existingUser = await userRepo.getUserByEmail(email);
         if (!existingUser) {
-        const { message, statusCode, code } = ERROR_CODES.USER_NOT_FOUND;
-        throw new AppError(message, statusCode, code);
+        throw new AppError(ERROR_CODES.USER_NOT_FOUND);
         };
-        if (existingUser.verified === true) {
-        const { message, statusCode, code } = ERROR_CODES.USER_ALREADY_VERIFIED; 
-        throw new AppError(message, statusCode, code);
-        }
+        if (existingUser.emailVerified === true) {
+        throw new AppError(ERROR_CODES.USER_ALREADY_VERIFIED);
+        };
         // generate code
         const code = generateVerificationCode();
         const hashedCode = hashVerificationCode(code);
@@ -112,33 +108,28 @@ export const signIn = async (email, password) => {
         // send email
         await sendVerificationEmail({ user: existingUser, verificationCode: code });
         };
-    
+
         // verify verification code logic:
         export const verifyVerificationCode = async (email, code) => {
             const normalizedCode = code.toString();
             const existingUser = await userRepo.getUserByEmail(email);
             if (!existingUser) {
-                const { code, message, statusCode } = ERROR_CODES.USER_NOT_FOUND;
-                throw new AppError(message, statusCode, code);
-            }
+                throw new AppError(ERROR_CODES.USER_NOT_FOUND);
+            };
             if (existingUser.emailVerified) {
-                const { code, message, statusCode } = ERROR_CODES.USER_ALREADY_VERIFIED;
-                throw new AppError(message, statusCode, code); 
+                throw new AppError(ERROR_CODES.USER_ALREADY_VERIFIED); 
             }
             const record = await authRepo.getVerificationCode({ userId: existingUser._id });
             if (!record) {
-                const { code, message, statusCode } = ERROR_CODES.NO_VERIFICATION_CODE_FOUND;
-                throw new AppError(message, statusCode, code);
-            }
+                throw new AppError(ERROR_CODES.NO_VERIFICATION_CODE_FOUND);
+            };
             if (record.expirationTime.getTime() < Date.now()) {
-                const { code, message, statusCode } = ERROR_CODES.VERIFICATION_CODE_EXPIRED;
-                throw new AppError(message, statusCode, code);
+                throw new AppError(ERROR_CODES.VERIFICATION_CODE_EXPIRED);
             }
             // check if code matches
             const isMatch = doCompare(normalizedCode, record.hashedCode);
             if (!isMatch) {
-                const { code, message, statusCode } = ERROR_CODES.INVALID_VERIFICATION_CODE;
-                throw new AppError(message, statusCode, code);
+                throw new AppError(ERROR_CODES.INVALID_VERIFICATION_CODE);
             }
             //update user as verified
             await userRepo.markAsVerified(existingUser._id);
@@ -149,15 +140,13 @@ export const signIn = async (email, password) => {
         export const changePassword = async( email, oldPassword, newPassword) => {
             const existingUser = await userRepo.getUserByEmail(email);
             if (!existingUser) {
-                const { code, message, statusCode } =ERROR_CODES.USER_NOT_FOUND;
-                throw new AppError(message, statusCode, code);
-            }
+                throw new AppError(ERROR_CODES.USER_NOT_FOUND);
+            };
         //check old password:
         const isMatch = await doCompare(oldPassword, existingUser.password);
         if (!isMatch) {
-            const { code, message, statusCode } = ERROR_CODES.WRONG_PASSWORD;
-            throw new AppError(message, statusCode, code);
-        }
+            throw new AppError(ERROR_CODES.WRONG_PASSWORD);
+        };
         // update password:
         const hashedPassword = await doHashing(newPassword);
         existingUser.password = hashedPassword;
@@ -169,8 +158,7 @@ export const signIn = async (email, password) => {
 export const sendForgotPassCode = async (email) => {
     const existingUser = await userRepo.getUserByEmail(email);
     if (!existingUser) {
-        const { code, message, statusCode } = ERROR_CODES.USER_NOT_FOUND
-        throw new AppError(message, statusCode, code);
+        throw new AppError(ERROR_CODES.USER_NOT_FOUND);
     };
     // generate code
     const code = generateVerificationCode();
@@ -191,25 +179,23 @@ export const sendForgotPassCode = async (email) => {
         const stringCode = String(code);
         const existingUser = await userRepo.getUserByEmail(email);
         if (!existingUser) {
-            const { code, statusCode, message } = ERROR_CODES.USER_NOT_FOUND;
-            throw new AppError(message, statusCode, code);
+            const { code, statusCode, message, type } = ERROR_CODES.USER_NOT_FOUND;
+            throw new AppError(message, statusCode, code, type);
         }
         const serializedUser = UserSerializer.base(existingUser);
         const record = await authRepo.getVerificationCode({ userId: serializedUser.id });
         if (!record) {
-            const { code, message, statusCode } = ERROR_CODES.NO_VERIFICATION_CODE_FOUND
-            throw new AppError(message, statusCode, code);
+            const { code, message, statusCode, type } = ERROR_CODES.NO_VERIFICATION_CODE_FOUND
+            throw new AppError(message, statusCode, code, type);
         };
         if (record.expirationTime.getTime() < Date.now()) {
-            const { code, message, statusCode } = ERROR_CODES.VERIFICATION_CODE_EXPIRED;
-            throw new AppError(message, statusCode, code);
+            throw new AppError(ERROR_CODES.VERIFICATION_CODE_EXPIRED);
         };
-        // check if code is valid:
+        // check if code is valide:
         const hashedCode = hashVerificationCode(stringCode);
         if (hashedCode !== record.hashedCode) {
-            const { code, message, statusCode } = ERROR_CODES.INVALID_VERIFICATION_CODE;
-            throw new AppError(message, statusCode, code);
-        }
+            throw new AppError(ERROR_CODES.INVALID_VERIFICATION_CODE);
+        };
         //update password
         const newPasswordHashed = await doHashing(newPassword);
         existingUser.password = newPasswordHashed;
@@ -221,25 +207,27 @@ export const sendForgotPassCode = async (email) => {
     // refresh token logic
     export const refreshToken = async (refreshToken) => {
   if (!refreshToken) {
-    throw new AppError('Missing refresh token', 401);
+    throw new AppError(ERROR_CODES.MISSING_REFRESH_TOKEN);
   }
   //  Verify JWT
   let payload;
   try {
     payload = jwt.verify(refreshToken, config().refreshTokenSecret);
   } catch {
-    throw new AppError('Invalid refresh token', 401);
-  }
+    throw new AppError( ERROR_CODES.INVALID_REFRESH_TOKEN);
+  };
+
   if (payload.type !== 'refresh') {
-    throw new AppError('Invalid token type', 401);
-  }
+    throw new AppError(ERROR_CODES.INVALID_TOKEN_TYPE);
+  };
+
   const { id: userId, tokenId: oldTokenId } = payload;
   // Check Redis
   const oldKey = `refreshToken:${userId}:${oldTokenId}`;
-  const exists = await redisClient.get(oldKey);
-  if (!exists) {
-    throw new AppError('Refresh token revoked', 401);
-  }
+  const oldValue = await redisClient.getDel(oldKey);
+  if (!oldValue) {
+    throw new AppError(ERROR_CODES.INVALID_REFRESH_TOKEN);
+  };
   const newTokenId = crypto.randomUUID();
   const newRefreshToken = generateRefreshToken(
     { id: userId, role: payload.role },
