@@ -1,5 +1,3 @@
-import { COMMAND_LIST_FILTER_BY } from "redis";
-
 export const ERROR_TYPE = {
     VALIDATION: 'VALIDATION',
     INFRA: 'INFRA',

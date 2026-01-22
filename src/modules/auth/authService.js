@@ -27,6 +27,7 @@ export const signUp = async (email, password, name) => {
         email,
         password: hashedPassword,
         name
+    
     });
     const serializedUser = UserSerializer.base(user);
     // generate tokens
@@ -216,11 +217,10 @@ export const sendForgotPassCode = async (email) => {
   } catch {
     throw new AppError( ERROR_CODES.INVALID_REFRESH_TOKEN);
   };
-
+  // Check token type
   if (payload.type !== 'refresh') {
     throw new AppError(ERROR_CODES.INVALID_TOKEN_TYPE);
   };
-
   const { id: userId, tokenId: oldTokenId } = payload;
   // Check Redis
   const oldKey = `refreshToken:${userId}:${oldTokenId}`;
