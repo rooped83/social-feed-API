@@ -17,7 +17,9 @@ export const rolePermissions = {
         permissions.EDIT_COMMENT,
         permissions.DELETE_COMMENT,
         permissions.VIEW_COMMENT,
-        permissions.EDIT_ROLE
+        permissions.EDIT_ROLE,
+        permissions.UPDATE_USER_ROLE,
+        permissions.CREATE_USER
     ],
     USER: [
         permissions.VIEW_POST,
@@ -27,6 +29,7 @@ export const rolePermissions = {
         permissions.EDIT_OWN_POST,
         permissions.DELETE_OWN_POST,
         permissions.VIEW_COMMENT,
+        permissions.VIEW_USER,
         permissions.CREATE_COMMENT
     ],
     EDITOR: [

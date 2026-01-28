@@ -7,8 +7,8 @@ export const getUserByEmail = (email) => {
 export const getUserById = (userId) => {
     return User.findById(userId);
 } ;
-export const createUser = async ({ email, password, name }) => {
-     const newUser = await User.create({ email, password, name });
+export const createUser = async (data) => {
+     const newUser = await User.create(data);
      return newUser.toObject();
 };
 
@@ -31,4 +31,9 @@ export const getUnverifiedUsers = () => {
 
 export const markAsVerified = (userId) => {
     return User.findOneAndUpdate({ _id: userId }, { emailVerified: true }, { new: true });
+};
+
+export const updateUserRole = async (userId, role) => {
+    const user = await User.findByIdAndUpdate(userId , { role }, { new: true });
+    return user;
 };

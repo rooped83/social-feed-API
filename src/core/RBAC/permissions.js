@@ -15,6 +15,8 @@ export const permissions = {
     EDIT_OWN_COMMENT: 'edit_own_comment',
     DELETE_OWN_COMMENT: 'delete_own_comment',
     VIEW_COMMENT: 'view_comment',
-    EDIT_ROLE: 'edit_role'
+    EDIT_ROLE: 'edit_role',
+    UPDATE_USER_ROLE: 'update_user_role',
+    CREATE_USER: 'create_user'
 };
 
