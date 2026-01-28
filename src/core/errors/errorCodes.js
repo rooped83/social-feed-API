@@ -181,8 +181,26 @@ export const ERROR_CODES = {
     CAN_NOT_CHANGE_OWN_ROLE: {
       code: 'CAN_NOT_CHANGE_OWN_ROLE',
       message: 'You can not change your own role',
+      statusCode: 403,
+      type: 'AUTH'
+    },
+    CAN_NOT_UPDATE_ADMIN: {
+      code: 'CAN_NOT_UPDATE_ADMIN',
+      message: 'You can not update an admin user',
+      statusCode: 403,
+      type: 'AUTH'
+    },
+    CAN_NOT_CREATE_ADMIN: {
+      code: 'CAN_NOT_CREATE_ADMIN',
+      message: 'You can not create an admin user',
+      statusCode: 403,
+      type: 'AUTH'
+    },
+    INVALID_USER_ROLE: {
+      code: 'INVALID_USER_ROLE',
+      message: 'Invalid user role',
       statusCode: 400,
       type: 'VALIDATION'
-    },
+    }
     };
 

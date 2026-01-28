@@ -16,6 +16,7 @@ export const config = () => ({
     smtpPort: process.env.SMTP_PORT,
     smtpUser: process.env.SMTP_USER,
     smtpPass: process.env.SMTP_PASS,
+    adminPassword: process.env.ADMIN_PASSWORD || requiredEnv('ADMIN_PASSWORD'),
     logLevel: process.env.LOG_LEVEL || 'info',
     corsOrigin: process.env.CORS_ORIGIN || requiredEnv('CORS_ORIGIN')
 });
