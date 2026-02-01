@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "vitest test --coverage" 
+    "test": "vitest test --coverage"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +28,8 @@
     "nodemon": "^3.1.10",
     "rate-limiter-flexible": "^8.1.0",
     "redis": "^5.9.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "terminal": "^0.1.4",
     "winston": "^3.18.3"
   }
