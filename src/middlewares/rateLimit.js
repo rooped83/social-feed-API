@@ -14,18 +14,35 @@ export function dynamicRateLimiter(type = 'general') {
 });
     return  asyncHandler(async (req, res, next) => {
         const key = req.user?.id || req.ip;
+         try {
+      if (redisAvailable) {
+        await redisLimiter.consume(key);
+      } else {
+        console.warn('Redis unavailable — using memory limiter');
+        await memoryLimiter.consume(key);
+      }
+
+      return next();
+    } catch (err) {
+      // Rate limit exceeded
+      if (err?.remainingPoints === 0) {
+        return next(new AppError(ERROR_CODES.RATE_LIMIT_EXCEEDED));
+      }
+      // Redis internal error - fallback to memory
+      if (redisAvailable) {
+        console.error('Redis limiter error, switching to memory:', err.message);
 
         try {
-            await rateLimiter.consume(key);
-
-            return next();
-         } catch (err) {
-            if (err.remainingPoints === 0) {
-              return next(new AppError(ERROR_CODES.RATE_LIMIT_EXCEEDED));
-            }
-            return next(new AppError(ERROR_CODES.RATE_LIMIT_UNAVAILABLE));
-        ;
+          await memoryLimiter.consume(key);
+          return next();
+        } catch {
+          return next(new AppError(ERROR_CODES.RATE_LIMIT_EXCEEDED));
         }
-      
-    });
+      }
+
+      // If memory limiter failed unexpectedly
+      return next(new AppError(ERROR_CODES.RATE_LIMIT_UNAVAILABLE));
+    }
+  });
+
 };
