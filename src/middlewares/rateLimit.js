@@ -35,8 +35,6 @@ function getLimiter(type, role) {
 export function dynamicRateLimiter(type) {
   return asyncHandler(async (req, res, next) => {
     const role = req.user?.role || 'ANONYMOUS';
-    console.log({ type, role, typeConfig: rateLimiterConfig[type], roleConfig: rateLimiterConfig[type]?.[role] });
-
     const limiter = getLimiter(type, role);
 
     if (!limiter) {
