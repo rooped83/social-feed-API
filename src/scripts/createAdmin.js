@@ -5,7 +5,7 @@ import connectDb from '../../src/config/mongoDb.js';
 
 const run = async () => {
         await connectDb();
-  const existing = await userRepo.getUserByEmail('admin@system.com');
+  const existing = await userRepo.getUserByEmail('admin1@system.com');
   if (existing) {
     console.log('Admin already exists');
   
@@ -15,7 +15,7 @@ const run = async () => {
   const hashed = await doHashing(config().adminPassword);
 
   await userRepo.createUser({
-    email: 'admin@system.com',
+    email: 'admin1@system.com',
     name: 'Admin',
     password: hashed,
     role: 'ADMIN'

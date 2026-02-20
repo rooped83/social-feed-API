@@ -6,6 +6,11 @@ export const getAllUsers = asyncHandler(async (req, res) => {
         res.status(200).json({ success: true, data: users });
 });
 
+export const getUnverifiedUsers = asyncHandler(async (req, res) => {
+        const users = await userService.getUnverifiedUsers();
+        res.status(200).json({ success: true, data: users });
+});
+
 export const adminCreateUser = asyncHandler(async (req, res) => {
         const { email, password, name, role } = req.body;
         const adminUser = req.user;

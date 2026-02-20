@@ -48,6 +48,9 @@ export const signUp = async (email, password, name) => {
 export const signIn = async (email, password) => {
     // check if exists
     const user = await userRepo.getUserByEmail(email);
+    console.log("EMAIL:", email);
+console.log("FOUND USER:", user);
+
     if (!user) {
         throw new AppError( ERROR_CODES.USER_NOT_FOUND);
     }

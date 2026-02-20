@@ -7,9 +7,13 @@ import helmet from 'helmet';
 import routes from './routes/index.js';
 import { errorHandler } from './core/errors/errorHandler.js';
 import { dynamicRateLimiter } from './middlewares/rateLimit.js';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger.js';
+
 const app = express();
 
 app.use(express.json());
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(helmet());
 app.use(cors( {
     credentials: true,
