@@ -2,7 +2,7 @@ import Router from 'express';
 import { commentSchema } from './commentValidation.js';
 import * as controller from './commentController.js';
 import { validate } from '../../middlewares/validator.js';
-import { authorize } from '../../middlewares/authorization.js';
+import { authenticate } from '../../middlewares/authentication.js';
 import { dynamicRateLimiter } from '../../middlewares/rateLimit.js';
 import { requirePermission } from '../../middlewares/requirePermission.js';
 
@@ -15,7 +15,7 @@ const router = Router({ mergeParams: true });
  *     summary: Get comments for a post
  *     tags: [Comments]
  */
-router.get('/:postId',authorize, requirePermission('view_comment'), dynamicRateLimiter('read'),controller.getPostComments);
+router.get('/:postId',authenticate, requirePermission('view_comment'), dynamicRateLimiter('read'),controller.getPostComments);
 
 /**
  * @swagger
@@ -26,7 +26,7 @@ router.get('/:postId',authorize, requirePermission('view_comment'), dynamicRateL
  *     security:
  *       - bearerAuth: []
  */
-router.post('/:postId', authorize, requirePermission('create_comment'), dynamicRateLimiter('write'), validate(commentSchema), controller.addComment);
+router.post('/:postId', authenticate, requirePermission('create_comment'), dynamicRateLimiter('write'), validate(commentSchema), controller.addComment);
 
 /**
  * @swagger
@@ -36,7 +36,7 @@ router.post('/:postId', authorize, requirePermission('create_comment'), dynamicR
  *     tags: [Comments]
  *     security:
  *       - bearerAuth: []
- */router.patch('/:commentId', authorize, requirePermission('edit_comment'), dynamicRateLimiter('write'),validate(commentSchema), controller.editComment);
+ */router.patch('/:commentId', authenticate, requirePermission('edit_comment'), dynamicRateLimiter('write'),validate(commentSchema), controller.editComment);
 
 /**
  * @swagger
@@ -47,6 +47,6 @@ router.post('/:postId', authorize, requirePermission('create_comment'), dynamicR
  *     security:
  *       - bearerAuth: []
  */
-router.delete('/:commentId', authorize, requirePermission('delete_comment'), dynamicRateLimiter('destructive'), controller.deleteComment);
+router.delete('/:commentId', authenticate, requirePermission('delete_comment'), dynamicRateLimiter('destructive'), controller.deleteComment);
 
 export default router;

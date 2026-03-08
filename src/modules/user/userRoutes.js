@@ -1,7 +1,7 @@
 import Router from 'express';
 const router = Router({ mergeParams: true });
 import * as userController from './userController.js';
-import { authorize } from '../../middlewares/authorization.js';
+import { authenticate } from '../../middlewares/authentication.js';
 import { requirePermission } from '../../middlewares/requirePermission.js'; 
 import { dynamicRateLimiter } from '../../middlewares/rateLimit.js';
 
@@ -23,7 +23,7 @@ import { dynamicRateLimiter } from '../../middlewares/rateLimit.js';
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-router.get('/', authorize, requirePermission('view_user'), dynamicRateLimiter('read'), userController.getAllUsers);
+router.get('/', authenticate, requirePermission('ADMIN'), dynamicRateLimiter('read'), userController.getAllUsers);
 
 /**
  * @swagger
@@ -59,7 +59,7 @@ router.get('/', authorize, requirePermission('view_user'), dynamicRateLimiter('r
  *       403:
  *         description: Forbidden — insufficient permissions
  */
-router.post('/', authorize, requirePermission('create_user'), dynamicRateLimiter('write'), userController.adminCreateUser);
+router.post('/', authenticate, requirePermission('ADMIN'), dynamicRateLimiter('write'), userController.adminCreateUser);
 
 /**
  * @swagger
@@ -97,7 +97,7 @@ router.post('/', authorize, requirePermission('create_user'), dynamicRateLimiter
  *       404:
  *         description: User not found
  */
-router.patch('/:userId/role', authorize, requirePermission('update_user_role'), dynamicRateLimiter('write'), userController.updateUserRole);
+router.patch('/:userId/role', authenticate, requirePermission('ADMIN'), dynamicRateLimiter('write'), userController.updateUserRole);
 
 /**
  * @swagger
@@ -112,5 +112,5 @@ router.patch('/:userId/role', authorize, requirePermission('update_user_role'), 
  *       200:
  *         description: List of unverified users
  */
-router.get('/unverified', authorize, requirePermission('view_user'), dynamicRateLimiter('read'), userController.getUnverifiedUsers);
+router.get('/unverified', authenticate, requirePermission('ADMIN'), dynamicRateLimiter('read'), userController.getUnverifiedUsers);
 export default router;

@@ -1,5 +1,5 @@
 import Router from 'express';
-import { authorize } from '../../middlewares/authorization.js';
+import { authenticate } from '../../middlewares/authentication.js';
 import { validate } from '../../middlewares/validator.js';
 import { postSchema } from './validation/createPostSchema.js';
 import { updatePostSchema } from './validation/updatePostSchema.js';
@@ -29,7 +29,7 @@ import { dynamicRateLimiter } from '../../middlewares/rateLimit.js';
  *       200:
  *         description: List of posts
  */
-router.get('/', authorize, requirePermission('view_post'), dynamicRateLimiter('read'), controller.getAllPosts);
+router.get('/', authenticate, requirePermission('view_post'), dynamicRateLimiter('read'), controller.getAllPosts);
 
 /**
  * @swagger
@@ -61,7 +61,7 @@ router.get('/', authorize, requirePermission('view_post'), dynamicRateLimiter('r
  *       403:
  *         description: Forbidden — insufficient permissions
  */
-router.get('/user-posts/:id', authorize, requirePermission('view_post'), dynamicRateLimiter('read'), controller.getUserPosts);
+router.get('/user-posts/:id', authenticate, requirePermission('view_post'), dynamicRateLimiter('read'), controller.getUserPosts);
 
 /**
  * @swagger
@@ -81,7 +81,7 @@ router.get('/user-posts/:id', authorize, requirePermission('view_post'), dynamic
  *       404:
  *         description: Post not found
  */
-router.get('/:id', authorize, requirePermission('view_post'), dynamicRateLimiter('read'), controller.getPostById);
+router.get('/:id', authenticate, requirePermission('view_post'), dynamicRateLimiter('read'), controller.getPostById);
 
 /**
  * @swagger
@@ -111,7 +111,7 @@ router.get('/:id', authorize, requirePermission('view_post'), dynamicRateLimiter
  *       403:
  *         description: Forbidden — insufficient permissions
  */
-router.get('/category/:category', authorize, requirePermission('view_post'), dynamicRateLimiter('read'), controller.getPostsByCategory);
+router.get('/category/:category', authenticate, requirePermission('view_post'), dynamicRateLimiter('read'), controller.getPostsByCategory);
 
 /**
  * @swagger
@@ -139,7 +139,7 @@ router.get('/category/:category', authorize, requirePermission('view_post'), dyn
  *       201:
  *         description: Post created
  */
-router.post('/',  authorize, requirePermission('create_post'), dynamicRateLimiter('write'), validate(postSchema), controller.createPost);
+router.post('/',  authenticate, requirePermission('create_post'), dynamicRateLimiter('write'), validate(postSchema), controller.createPost);
 
 /**
  * @swagger
@@ -150,7 +150,7 @@ router.post('/',  authorize, requirePermission('create_post'), dynamicRateLimite
  *     security:
  *       - bearerAuth: []
  */
-router.patch('/:id', authorize, requirePermission('edit_post'), dynamicRateLimiter('write'), validate(updatePostSchema), controller.updatePost);
+router.patch('/:id', authenticate, requirePermission('edit_post'), dynamicRateLimiter('write'), validate(updatePostSchema), controller.updatePost);
 
 /**
  * @swagger
@@ -161,5 +161,5 @@ router.patch('/:id', authorize, requirePermission('edit_post'), dynamicRateLimit
  *     security:
  *       - bearerAuth: []
  */
-router.delete('/:id', authorize, requirePermission('delete_post'), dynamicRateLimiter('destructive'), controller.deletePost);
+router.delete('/:id', authenticate, requirePermission('delete_post'), dynamicRateLimiter('destructive'), controller.deletePost);
 export default router;

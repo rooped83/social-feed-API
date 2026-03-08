@@ -201,6 +201,30 @@ export const ERROR_CODES = {
       message: 'Invalid user role',
       statusCode: 400,
       type: 'VALIDATION'
+    },
+    NO_TOKEN_PROVIDED: {
+      code: 'NO_TOKEN_PROVIDED',
+      message: 'No token provided',
+      statusCode: 401,
+      type: 'AUTH'
+    },
+    INVALID_TOKEN: {
+      code: 'INVALID_TOKEN',
+      message: 'Invalid token',
+      statusCode: 401,
+      type: 'AUTH'
+    },
+    FORBIDDEN: {
+      code: 'FORBIDDEN',
+      message: 'You do not have permission to access this resource',
+      statusCode: 403,
+      type: 'AUTH'
+    },
+    BAD_REQUEST: {
+      code: 'BAD_REQUEST',
+      message: 'Bad request',
+      statusCode: 400,
+      type: 'VALIDATION'
     }
     };
 

@@ -1,25 +1,25 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest';
-import * as postRepo from '../../../src/modules/post/postRepo.js'; 
-import * as postService from '../../../src/modules/post/postService.js'; 
-import * as userRepo from '../../../src/modules/user/userRepo.js'; 
-import * as commentRepo from '../../../src/modules/comment/commentRepo.js'; 
-import AppError from '../../../src/core/errors/appError.js'; 
-import { isOwnerOrAdmin } from '../../../src/core/utils/ownership.js';
-import { ERROR_CODES } from '../../../src/core/errors/errorCodes.js';
-vi.mock('../../../src/modules/post/postRepo.js', () => ({ 
+import * as postRepo from '../../../../src/modules/post/postRepo.js'; 
+import * as postService from '../../../../src/modules/post/postService.js'; 
+import * as userRepo from '../../../../src/modules/user/userRepo.js'; 
+import * as commentRepo from '../../../../src/modules/comment/commentRepo.js'; 
+import AppError from '../../../../src/core/errors/appError.js'; 
+import { ERROR_CODES } from '../../../../src/core/errors/errorCodes.js';
+import { isOwnerOrAdmin } from '../../../../src/core/utils/ownership.js';
+vi.mock('../../../../src/modules/post/postRepo.js', () => ({ 
     getPostById: vi.fn(),
      deletePost: vi.fn(), 
      createPost: vi.fn(),
       getPaginated: vi.fn(),
        countPosts: vi.fn() 
     }));
-vi.mock('../../../src/modules/user/userRepo.js', () => ({
+vi.mock('../../../../src/modules/user/userRepo.js', () => ({
      getUserById: vi.fn() 
     })); 
-vi.mock('../../../src/modules/comment/commentRepo.js', () => ({
+vi.mock('../../../../src/modules/comment/commentRepo.js', () => ({
      countPostComments: vi.fn() 
     })); 
-    vi.mock('../../../src/core/utils/ownership.js', () => ({
+    vi.mock('../../../../src/core/utils/ownership.js', () => ({
      isOwnerOrAdmin: vi.fn() 
     })); 
     
@@ -46,19 +46,31 @@ describe('deletePost', () => {
     expect(postRepo.deletePost).not.toHaveBeenCalled();
   });
 
-  test('throws if user is not owner nor admin', async () => {
-    postRepo.getPostById.mockResolvedValue({
-      id: 1,
-      userId: 99, 
-    });
-    isOwnerOrAdmin.mockImplementation(() => {
-      throw new AppError(ERROR_CODES.UNAUTHORIZED_ACTION);
-    });
-    await expect(
-      postService.deletePost(1, 10) 
-    ).rejects.toBeInstanceOf(AppError);
-    expect(postRepo.deletePost).not.toHaveBeenCalled();
+test('throws error if user is not owner nor admin', async () => {
+  postRepo.getPostById.mockResolvedValue({
+    id: 1,
+    user_id: 999, 
+    title: 'Test Post',
+    content: 'Test Content'
   });
+  
+  userRepo.getUserById.mockResolvedValue({
+    id: 10,
+    role: 'user' 
+  });
+
+  postRepo.deletePost.mockImplementation(() => {
+    throw new AppError(ERROR_CODES.UNAUTHORIZED_TO_DELETE_POST);
+  });
+
+  await expect(
+    postService.deletePost(1, 10)
+  ).rejects.toMatchObject({
+    message: 'You are not authorized to delete this post',
+    statusCode: 403,
+    code: 'UNAUTHORIZED_TO_DELETE_POST'
+  });
+});
 
   test('deletes post successfully when user is owner or admin', async () => {
     postRepo.getPostById.mockResolvedValue({
@@ -66,6 +78,7 @@ describe('deletePost', () => {
       userId: 10,
     });
     isOwnerOrAdmin.mockImplementation(() => true);
+    postRepo.deletePost.mockResolvedValue(true);
     await postService.deletePost(1, 10);
     expect(isOwnerOrAdmin).toHaveBeenCalledWith(10, { id: 10 });
     expect(postRepo.deletePost).toHaveBeenCalledWith(1);

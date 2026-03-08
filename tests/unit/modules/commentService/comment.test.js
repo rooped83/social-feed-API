@@ -1,25 +1,25 @@
 import { vi, test, describe, beforeEach, expect } from 'vitest'; 
-import * as commentRepo from '../../../src/modules/comment/commentRepo.js'; 
-import * as commentService from '../../../src/modules/comment/commentService.js'; 
-import * as userRepo from '../../../src/modules/user/userRepo.js'; 
-import { addComment } from '../../../src/modules/comment/commentService.js'; 
-import * as postRepo from '../../../src/modules/post/postRepo.js'; 
-import AppError from '../../../src/core/errors/appError.js';
-import { isOwnerOrAdmin } from '../../../src/core/utils/ownership.js'; 
-import { ERROR_CODES } from '../../../src/core/errors/errorCodes.js';
+import * as commentRepo from '../../../../src/modules/comment/commentRepo.js'; 
+import * as commentService from '../../../../src/modules/comment/commentService.js'; 
+import * as userRepo from '../../../../src/modules/user/userRepo.js'; 
+import { addComment } from '../../../../src/modules/comment/commentService.js'; 
+import * as postRepo from '../../../../src/modules/post/postRepo.js'; 
+import AppError from '../../../../src/core/errors/appError.js';
+import { isOwnerOrAdmin } from '../../../../src/core/utils/ownership.js'; 
+import { ERROR_CODES } from '../../../../src/core/errors/errorCodes.js';
 
-vi.mock('../../../src/modules/post/postRepo.js', () => ({
+vi.mock('../../../../src/modules/post/postRepo.js', () => ({
      getPostById: vi.fn() 
     })); 
-vi.mock('../../../src/modules/comment/commentRepo.js', () => ({ 
+vi.mock('../../../../src/modules/comment/commentRepo.js', () => ({ 
     addCommentToPost: vi.fn(), 
     getComment: vi.fn(), 
     deleteComment: vi.fn(), 
    })); 
-vi.mock('../../../src/modules/user/userRepo.js', () => ({ 
+vi.mock('../../../../src/modules/user/userRepo.js', () => ({ 
     getUserById: vi.fn() 
 })); 
-vi.mock('../../../src/core/utils/ownership.js', () => ({
+vi.mock('../../../../src/core/utils/ownership.js', () => ({
     isOwnerOrAdmin: vi.fn() 
 }))
 
@@ -50,7 +50,7 @@ describe('deleteComment service', () => {
 
     test('throws error when not the comment owner', async () => { 
             commentRepo.getComment.mockResolvedValue({ userId: 1, commentId: 1}) 
-            isOwnerOrAdmin.mockImplementation(() => { throw new AppError(ERROR_CODES.UNAUTHORIZED_TO_DELETE_COMMENT) });
+            isOwnerOrAdmin.mockImplementation(() => { throw new AppError(ERROR_CODES.UNAUTHORIZED_TO_DELETE_COMMENT); });
             await expect( commentService.deleteComment({ userId: 2, commentId: 1 }) 
                           ).rejects.toBeInstanceOf(AppError) 
         });

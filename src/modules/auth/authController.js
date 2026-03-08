@@ -5,7 +5,7 @@ import { config } from '../../config/index.js';
 export const signUp = asyncHandler(async (req, res) => {
     const { email, password, name } = req.body;
     const newUser = await authService.signUp(email, password, name);
-res.status(201).json({ success: true, message: "User created successfully", user: newUser }); 
+res.status(201).json({ success: true, message: "User created successfully", user: newUser.serializedUser, accessToken: newUser.accessToken }); 
 });
 
 //signin controller

@@ -1,0 +1,10 @@
+process.env.NODE_ENV = 'test';
+process.env.TOKEN_SECRET = 'testsecret';
+process.env.REFRESH_TOKEN_SECRET = 'testsecret';
+process.env.DB_URI = 'mongodb://localhost:27017/blog-test';
+process.env.REDIS_HOST = 'localhost';
+process.env.REDIS_PORT = '6379';
+process.env.REDIS_PASSWORD = 'redispassword';
+process.env.PEPPER_SECRET = 'testsecret';
+process.env.ADMIN_PASSWORD = 'Admin/1234';
+process.env.CORS_ORIGIN = 'http://localhost:3000';
