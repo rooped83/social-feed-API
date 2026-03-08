@@ -4,7 +4,7 @@ import { asyncHandler } from '../core/utils/asyncCatch.js'
 import { ERROR_CODES } from '../core/errors/errorCodes.js';
 import AppError from '../core/errors/appError.js';
 import User from '../modules/user/userModel.js';
- export const authorize = asyncHandler(async (req, res, next) => {
+ export const authenticate = asyncHandler(async (req, res, next) => {
     let token ;
     if (req.headers.client === 'not-browser') {
         token = req.headers.authorization;
@@ -19,7 +19,7 @@ import User from '../modules/user/userModel.js';
     }
     try {
         const decoded = jwt.verify(token, tokenConfig().accessTokenSecret);
-        const user = User.findById(decoded.id).select('-password');
+        const user = await User.findById(decoded.id).select('-password');
         req.user = user;
         next();
         } catch (error) {

@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { authorize } from '../../middlewares/authorization.js';
 import { validate } from '../../middlewares/validator.js';
 import { signUpSchema, signInSchema, verificationCodeSchema } from './authValidation.js';
 import * as authController  from '../auth/authController.js';
 import { dynamicRateLimiter } from '../../middlewares/rateLimit.js';
+import { authenticate } from '../../middlewares/authentication.js';
 const router = Router({ mergeParams: true });
 
 /**
@@ -110,7 +110,7 @@ router.post('/signout', dynamicRateLimiter('logout'), authController.signOut);
  *       401:
  *         description: Unauthorized
  */
-router.patch('/email-verification', authorize, dynamicRateLimiter('emailVerification'), authController.sendEmailVerificationCode);
+router.patch('/email-verification', authenticate, dynamicRateLimiter('emailVerification'), authController.sendEmailVerificationCode);
 
 /**
  * @swagger
@@ -136,7 +136,7 @@ router.patch('/email-verification', authorize, dynamicRateLimiter('emailVerifica
  *       400:
  *         description: Invalid code
  */
-router.patch('/email-verification-verify',  authorize, dynamicRateLimiter('emailVerification'), validate(verificationCodeSchema), authController.verifyEmailCode);
+router.patch('/email-verification-verify',  authenticate, dynamicRateLimiter('emailVerification'), validate(verificationCodeSchema), authController.verifyEmailCode);
  
 /**
  * @swagger
@@ -152,7 +152,7 @@ router.patch('/email-verification-verify',  authorize, dynamicRateLimiter('email
  *       401:
  *         description: Unauthorized
  */
-router.patch('/change-password', authorize, dynamicRateLimiter('resetPassword'), authController.changePassword);
+router.patch('/change-password', authenticate, dynamicRateLimiter('resetPassword'), authController.changePassword);
 
 /**
  * @swagger
