@@ -1,11 +1,12 @@
 import commentModel from './commentModel.js';
-import * as postRepo from '../post/postRepo.js';
+
+// get comments by post id
 export const getCommentsByPostId = (postId) => {
 const comments = commentModel.find({ postId: postId });
-const totalComments = comments.length;
 return comments;
 };
 
+// add comment to post
 export const addCommentToPost = async (postId, userId, text) => {
     const comment = await commentModel.create({ postId, userId, text });
     return comment;

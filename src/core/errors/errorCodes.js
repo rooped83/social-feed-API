@@ -160,12 +160,13 @@ export const ERROR_CODES = {
       message: 'Invalid request',
       statusCode: 400,
       type: 'VALIDATION'
-},MISSING_REFRESH_TOKEN: {
-   code: 'MISSING_REFRESH_TOKEN',
-   message: 'Missing refresh token',
-   statusCode: 401,
-   type: 'AUTH'
-},
+     },
+     MISSING_REFRESH_TOKEN: {
+      code: 'MISSING_REFRESH_TOKEN',
+      message: 'Missing refresh token',
+      statusCode: 401,
+      type: 'AUTH'
+     },
     INVALID_REFRESH_TOKEN: {
       code: 'INVALID_REFRESH_TOKEN',
       message: 'Invalid refresh token',
@@ -205,12 +206,6 @@ export const ERROR_CODES = {
     NO_TOKEN_PROVIDED: {
       code: 'NO_TOKEN_PROVIDED',
       message: 'No token provided',
-      statusCode: 401,
-      type: 'AUTH'
-    },
-    INVALID_TOKEN: {
-      code: 'INVALID_TOKEN',
-      message: 'Invalid token',
       statusCode: 401,
       type: 'AUTH'
     },

@@ -2,7 +2,7 @@ export const errorHandler = (err, req, res, next) => {
     if (req.headersSent) return next(err);
     err.statusCode = err.statusCode || 500;
     //err.message = err.message || 'Internal Server Error';
-    err.type = err.type 
+    err.type = err.type || 'BUG';
     if (!err.type) {
         err.type = 'BUG';
     }

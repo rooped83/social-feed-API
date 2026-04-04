@@ -54,9 +54,9 @@ export const changePasswordSchema = joi.object({
  export const forgotPassCodeSchema = joi.object({
     code: joi.string()
     .required()
-.pattern(new RegExp("^\d{6}$"))
-.trim()
-.message({ 
+    .pattern(new RegExp("^\\d{6}$"))
+    .trim()
+    .message({ 
     "string.empty": "code is required",
     "string.pattern.base": "Verification code must be a 6 digit number" ,
 }),

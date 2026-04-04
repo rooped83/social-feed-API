@@ -27,7 +27,7 @@ export const editComment = async (commentId, userId, text) => {
     if (!comment) {
         throw new AppError(ERROR_CODES.COMMENT_NOT_FOUND);
     };
-    isOwnerOrAdmin(comment.userId, { id: userId, role: user.role });
+    isOwnerOrAdmin(comment.userId, { id: userId, role: userId.role });
     const updatedComment = await commentRepo.editComment(commentId, text);
     return updatedComment;
 };
