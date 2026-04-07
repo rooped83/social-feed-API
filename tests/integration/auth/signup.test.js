@@ -20,7 +20,6 @@ describe('Signup', () => {
         password: 'Abc/3456',
         name: 'Test User',
       });
-    console.log('body:', res.body);
     expect(res.statusCode).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.user.email).toBe('test@test.com');
