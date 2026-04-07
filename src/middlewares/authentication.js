@@ -21,6 +21,9 @@ import User from '../modules/user/userModel.js';
         const decoded = jwt.verify(token, tokenConfig().accessTokenSecret);
         const user = await User.findById(decoded.id).select('-password');
         req.user = user;
+        console.log("AUTH_HEADER:", req.headers.authorization)
+            console.log("SIGN SECRET:", process.env.JWT_SECRET);
+
         next();
         } catch (error) {
             console.error('JWT verification error:', error);

@@ -14,7 +14,7 @@ export const generateToken = (user) => {
             type: 'access'
          },
         tokenConfig().accessTokenSecret,
-        { expiresIn: tokenConfig().accessTokenExpirationTime }
+        { expiresIn: tokenConfig().accessTokenExpirationTime },
     );
 };
 

@@ -15,7 +15,11 @@
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "eslint": "10.2.0"
+    "@vitest/coverage-v8": "^4.1.2",
+    "eslint": "10.2.0",
+    "mongodb-memory-server": "^11.0.1",
+    "supertest": "^7.2.2",
+    "vitest": "^4.1.2"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -32,6 +36,8 @@
     "nodemon": "^3.1.10",
     "rate-limiter-flexible": "^8.1.0",
     "redis": "^5.9.0 ",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "terminal": "^0.1.4",
     "winston": "^3.18.3"
   }

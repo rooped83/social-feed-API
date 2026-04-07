@@ -9,7 +9,7 @@ export const config = () => ({
     redisUsername: process.env.REDIS_USERNAME || 'default',
     redisHost: process.env.REDIS_HOST || requiredEnv('REDIS_HOST'),
     redisPort: process.env.REDIS_PORT || requiredEnv('REDIS_PORT'),
-    redisPassword: process.env.REDIS_PASSWORD || requiredEnv('REDIS_PASSWORD'),
+    redisPassword: process.env.REDIS_PASSWORD || '',
     pepperSecret: process.env.PEPPER_SECRET || requiredEnv('PEPPER_SECRET'),
     smtpEmailFrom: process.env.SMTP_EmailFrom , 
     smtpHost: process.env.SMTP_HOST,
