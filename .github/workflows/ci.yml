@@ -38,3 +38,4 @@ jobs:
           DB_URI: mongodb://localhost:27017/blog-test
           REDIS_HOST: localhost
           TOKEN_SECRET: testsecret
+          REDIS_URL: redis://localhost:6379
