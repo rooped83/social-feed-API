@@ -20,6 +20,8 @@ import request from 'supertest';
         .set('client', 'not-browser'); 
         expect(res.statusCode).toBe(401);
      expect(res.body.message).toBe(ERROR_CODES.INVALID_TOKEN.message); });
+
+     
 test('admin should be able to fetch users', async () => {
     // First, create an admin user to sign in with
     const hashedPassword = await doHashing('admin123');
@@ -44,7 +46,6 @@ test('admin should be able to fetch users', async () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Accept', 'application/json')
         .set('client', 'not-browser');
-        console.log('Response status:', res.statusCode);
        expect(res.statusCode).toBe(200);
 });
   });
